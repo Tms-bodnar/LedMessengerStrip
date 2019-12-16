@@ -1,6 +1,8 @@
 package com.kalandlabor.ledmessengerstrip;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -9,10 +11,14 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.GridView;
 import android.widget.Toast;
+
+import adapters.CustomGridAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
                 addNewMessage(view);
             }
         });
+        Resources res = getResources();
+        String[] buttons = res.getStringArray(R.array.button_array);
+        GridView gridView = findViewById(R.id.grid_view);
+        CustomGridAdapter gridAdapter = new CustomGridAdapter(MainActivity.this, buttons);
+        gridView.setAdapter(gridAdapter);
+
     }
 
     private void addNewMessage(View view) {
@@ -41,24 +53,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.bluetooth_settings) {
-            Toast.makeText(context, "Implement bluetooth settings", Toast.LENGTH_SHORT).show();;
+            Toast.makeText(context, R.string.bluetooth_settings_message, Toast.LENGTH_SHORT).show();
+            Intent intentOpenBluetoothSettings = new Intent();
+            intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
+            startActivity(intentOpenBluetoothSettings);
             return true;
-        } if (id == R.id.faq) {
-            Toast.makeText(context, "Implement bluetooth settings", Toast.LENGTH_SHORT).show();;
+        }
+        if (id == R.id.faq) {
+            Toast.makeText(context, "Implement faq", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -67,6 +77,10 @@ public class MainActivity extends AppCompatActivity {
     public void speechToText(View view) {
         Snackbar.make(view, "implement speechToText", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+    }
+
+    public void itemClicked(int position){
+
     }
 }
 

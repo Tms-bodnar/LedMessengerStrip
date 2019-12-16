@@ -13,8 +13,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent">
-
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:rowCount="2"
+        android:columnCount="1">
+        <GridView
+            android:id="@+id/grid_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="0"
+            />
 
         <Button
             android:id="@+id/btnSpeak"
@@ -26,6 +34,8 @@
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:onClick="speechToText"
+            android:layout_row="1"
+            android:layout_column="0"
             />
     </GridLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
