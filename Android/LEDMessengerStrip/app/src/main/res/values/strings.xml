@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Led üzenetek</string>
+    <string name="bluetooth_settings">Bluetooth beállítása</string>
+    <string name="faq">FAQ</string>
+    <string name="speech_button">Inkább szóban mondom el</string>
+    <string name="thank_you">Köszönöm!</string>
+    <string name="thx">Köszi!</string>
+    <string name="sorry">Sajnálom!</string>
+    <string name="i_am_sorry">Bocsánat!</string>
+    <string name="Hi">Szia!</string>
+    <string name="dont_blink">Ne villogj, gyorsabban nem megy!</string>
+    <string name="dont_honk">Ne dudálj</string>
+    <string name="front_of_me">Előttem sem mennek</string>
+    <string name="look_out">Vigyázz!</string>
+    <string name="have_a_nice_day_too">Neked is szép napot!</string>
+</resources>
