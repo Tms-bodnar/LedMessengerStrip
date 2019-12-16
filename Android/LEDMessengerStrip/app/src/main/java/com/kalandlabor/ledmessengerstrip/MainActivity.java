@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void itemClicked(int position){
-
+        Snackbar.make(view, "implement buttonclick" + buttons[position], Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 }
 
