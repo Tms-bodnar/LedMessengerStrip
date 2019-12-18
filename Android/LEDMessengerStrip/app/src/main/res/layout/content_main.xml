@@ -2,40 +2,39 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <GridLayout
-        android:id="@+id/main_grid"
+    <GridView
+        android:id="@+id/grid_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:rowCount="2"
-        android:columnCount="1">
-        <GridView
-            android:id="@+id/grid_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_row="0"
-            android:layout_column="0"
-            />
+        android:layout_height="wrap_content"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toTopOf="@id/btnSpeak"
+        app:layout_constraintTop_toTopOf="@id/content"
+        app:layout_constraintVertical_bias="0.001"
+        tools:layout_editor_absoluteX="16dp"
+        android:numColumns="2"/>
 
-        <Button
-            android:id="@+id/btnSpeak"
-            android:background="@color/colorPrimary"
-            android:text="@string/speech_button"
-            android:textColor="@android:color/black"
-            android:textSize="22sp"
-            android:textStyle="normal"
-            android:layout_gravity="bottom"
-            android:layout_width="match_parent"
-            android:onClick="speechToText"
-            android:layout_row="1"
-            android:layout_column="0"
-            />
-    </GridLayout>
+    <Button
+        android:id="@+id/btnSpeak"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:background="@color/colorPrimary"
+        android:onClick="speechToText"
+        android:text="@string/speech_button"
+        android:textSize="25sp"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 </androidx.constraintlayout.widget.ConstraintLayout>

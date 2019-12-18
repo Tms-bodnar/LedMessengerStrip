@@ -15,14 +15,19 @@ import android.os.Handler;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import adapters.CustomGridAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
     Context context;
+    List<Button> buttonList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,16 +44,35 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         Resources res = getResources();
-        String[] buttons = res.getStringArray(R.array.button_array);
+        buttonsInit();
         GridView gridView = findViewById(R.id.grid_view);
-        CustomGridAdapter gridAdapter = new CustomGridAdapter(MainActivity.this, buttons);
+        CustomGridAdapter gridAdapter = new CustomGridAdapter(MainActivity.this, buttonList);
         gridView.setAdapter(gridAdapter);
 
     }
 
+    private void buttonsInit() {
+        buttonList = new ArrayList<>();
+        for (int i = 0; i < 10; i++){
+           buttonList.add(new Button(this));
+        }
+        buttonList.get(0).setText("Köszi!");
+        buttonList.get(1).setText("Köszönöm!");
+        buttonList.get(2).setText("Szia!");
+        buttonList.get(3).setText("Bocsi!");
+        buttonList.get(4).setText("Bocsánat");
+        buttonList.get(5).setText("Neked is szép napot!");
+        buttonList.get(6).setText("Nyugi");
+        buttonList.get(7).setText("Nyugalom a hosszú élet titka!");
+        buttonList.get(8).setText("Ne dudálj, köszi!");
+        buttonList.get(9).setText("Ne villogj, nem megy jobban!");
+    }
+
     private void addNewMessage(View view) {
-        Snackbar.make(view, "implement add new button", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        openDialog();
+    }
+
+    private void openDialog() {
     }
 
     @Override

@@ -10,25 +10,27 @@ import android.widget.Button;
 import com.kalandlabor.ledmessengerstrip.MainActivity;
 import com.kalandlabor.ledmessengerstrip.R;
 
+import java.util.List;
+
 public class CustomGridAdapter extends BaseAdapter {
 
     MainActivity mainActivity;
-    String[] items;
+    List<Button> items;
     LayoutInflater inflater;
 
-    public CustomGridAdapter(MainActivity mainActivity, String[] items) {
+    public CustomGridAdapter(MainActivity mainActivity, List<Button> items) {
         this.mainActivity = mainActivity;
         this.items = items;
         inflater = (LayoutInflater) this.mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
     @Override
     public int getCount() {
-        return items.length;
+        return items.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return items[position];
+        return items.get(position);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class CustomGridAdapter extends BaseAdapter {
         }
         Button button = (Button) convertView.findViewById(R.id.grid_item);
 
-        button.setText(items[position]);
+        button.setText(items.get(position).getText());
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
