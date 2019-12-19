@@ -4,5 +4,7 @@
     <string name="bluetooth_settings_message">Kérem, párosítsa a HC-05 eszközt a megnyíló beállításokban!</string>
     <string name="faq">FAQ</string>
     <string name="speech_button">Inkább szóban mondom el</string>
-
+    <string name="add_new_message">Új üzenet hozzáadása</string>
+    <string name="add">Hozzáadás</string>
+    <string name="delete_message">Üzenet törlése</string>
 </resources>
