@@ -9,10 +9,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:text="05"
         android:textSize="20sp"
         android:enabled="true"
-        android:clickable="true">
+        android:focusable="false"
+        android:focusableInTouchMode="false">
     </Button>
 
 </LinearLayout>

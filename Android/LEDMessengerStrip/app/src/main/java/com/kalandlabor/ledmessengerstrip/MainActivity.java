@@ -3,6 +3,7 @@ package com.kalandlabor.ledmessengerstrip;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -25,12 +27,17 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import adapters.CustomGridAdapter;
+import adapters.ObjectSerializer;
 import dialogs.NewMessageDialog;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     List<Button> buttonList;
     EditText newButtonsText;
+    GridView gridView;
+    CustomGridAdapter gridAdapter;
+    SharedPreferences sPrefs;
+    List<String> buttonTexts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +64,34 @@ public class MainActivity extends AppCompatActivity {
                 addNewMessage(view);
             }
         });
-        Resources res = getResources();
-        buttonsInit();
-        GridView gridView = findViewById(R.id.grid_view);
-        CustomGridAdapter gridAdapter = new CustomGridAdapter(MainActivity.this, buttonList);
+        buttonList = new ArrayList<>();
+        buttonTexts= new ArrayList<>();
+        addNewButton(getResources().getString(R.string.speech_button));
+        gridView = findViewById(R.id.grid_view);
+        gridAdapter = new CustomGridAdapter(MainActivity.this, buttonList);
         gridView.setAdapter(gridAdapter);
-        registerForContextMenu(gridView);
     }
 
-    private void buttonsInit() {
-        buttonList = new ArrayList<>();
-        for (int i = 0; i < 10; i++){
-           buttonList.add(new Button(this));
+    @Override
+    protected void onResume(){
+        super.onResume();
+  //     sPrefs = getSharedPreferences("buttons",context.MODE_PRIVATE);
+       sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        Set<String> buttonTextSet = new HashSet<>();
+        buttonTextSet =  sPrefs.getStringSet("buttonText", buttonTextSet);
+        buttonTexts.addAll(buttonTextSet);
+        for ( String text : buttonTexts) {
+            addNewButton(text);
         }
-        buttonList.get(0).setText("Köszi!");
-        buttonList.get(1).setText("Köszönöm!");
-        buttonList.get(2).setText("Szia!");
-        buttonList.get(3).setText("Bocsi!");
-        buttonList.get(4).setText("Bocsánat");
-        buttonList.get(5).setText("Neked is szép napot!");
-        buttonList.get(6).setText("Nyugi");
-        buttonList.get(7).setText("Nyugalom a hosszú élet titka!");
-        buttonList.get(8).setText("Ne dudálj, köszi!");
-        buttonList.get(9).setText("Ne villogj, nem megy jobban!");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences.Editor editor = sPrefs.edit();
+        Set<String> buttonTextSet = new HashSet<>(buttonTexts);
+        buttonTextSet.addAll(buttonTexts);
+        editor.putStringSet("buttonText",buttonTextSet).apply();
     }
 
     private void addNewMessage(View view) {
@@ -91,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 newButtonsText = (EditText) dialogView.findViewById(R.id.new_button_text);
+                buttonTexts.add(newButtonsText.getText().toString());
                 addNewButton(newButtonsText.getText().toString());
                 dialog.dismiss();
             }
@@ -133,26 +150,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void itemClicked(int position){
+        Snackbar.make(getWindow().getCurrentFocus(), "implement speechToText" + buttonList.get(position).getText(), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo)
-    {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
-    }
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item){
-        if(item.getTitle().equals("action one")){
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            int index = info.position;
-            buttonList.remove(index);
-        }else{
-            return super.onContextItemSelected(item);
+    public boolean removeItem(Button button) {
+        for ( Button b: buttonList ) {
+            if(b.getText() == button.getText()){
+                buttonList.remove(b);
+                Log.d("xxx","item remove " + button.getText());
+                gridAdapter.notifyDataSetChanged();
+                return removeButtonText(button);
+            }
         }
+
         return true;
+    }
+
+    private boolean removeButtonText(Button button) {
+        for (String s : buttonTexts) {
+            if (s.equals(button.getText())) {
+                buttonTexts.remove(s);
+                return true;
+            }
+        }
+        return false;
     }
 }
 
