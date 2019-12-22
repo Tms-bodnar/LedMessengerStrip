@@ -18,7 +18,6 @@ public class BluetoothMessenger {
     OutputStream os;
 
     public BluetoothMessenger(){
-        initBluetooth();
     }
 
     public void sendMessage(String textToSend) {
@@ -30,33 +29,43 @@ public class BluetoothMessenger {
         }
     }
 
-    private void initBluetooth() {
+    public String initBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        try {
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0) {
-                String addr = "";
-                for (BluetoothDevice dev : pairedDevices) {
-                    String deviceName = dev.getName();
-                    if (deviceName.equals("HC-05")) {
-                        bluetoothAdapter.cancelDiscovery();
-                        addr = dev.getAddress();
-                        device = bluetoothAdapter.getRemoteDevice(addr);
-                        try {
-                            Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
-                            clientSocket = (BluetoothSocket) m.invoke(device, 1);
-                            clientSocket.connect();
-                            os = clientSocket.getOutputStream();
-                        } catch (Exception e) {
-                            initBluetooth();
-                            Log.d("xxx", "clientsocketError: " + e.getMessage());
+        if (bluetoothAdapter == null) {
+            return "NOT support bluetooth";
+        } else if (!bluetoothAdapter.isEnabled()) {
+            return "BLUETOOTH ERROR";
+        } else {
+            try {
+                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+                if (pairedDevices.size() > 0) {
+                    String addr = "";
+                    for (BluetoothDevice dev : pairedDevices) {
+                        String deviceName = dev.getName();
+                        if (deviceName.equals("HC-05")) {
+                            bluetoothAdapter.cancelDiscovery();
+                            addr = dev.getAddress();
+                            device = bluetoothAdapter.getRemoteDevice(addr);
+                            try {
+                                Method m = device.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
+                                clientSocket = (BluetoothSocket) m.invoke(device, 1);
+                                clientSocket.connect();
+                                os = clientSocket.getOutputStream();
+                                Log.d("xxx", "socket + OS, OK");
+                                return "OK";
+                            } catch (Exception e) {
+                                Log.d("xxx", "clientsocket Error: " + e.getMessage());
+                                return "clientsocket Error";
+                            }
                         }
                     }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("BLUETOOTH ERROR ", e.getMessage());
+                return "BLUETOOTH ERROR";
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("BLUETOOTH ERROR ", e.getMessage());
+            return "NOK";
         }
     }
 

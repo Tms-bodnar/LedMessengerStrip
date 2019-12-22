@@ -19,6 +19,7 @@
     android:id="@+id/new_button_text"
     android:textColor="@color/cardview_light_background"
     android:focusable="true"
+    android:inputType="text"
     />
     <Button
         android:layout_width="match_parent"
@@ -28,6 +29,5 @@
         android:textAlignment="center"
         android:id="@+id/save_new_message"
         android:background="@drawable/rounded_btn"
-        android:layout_margin="@dimen/speech_button_bottom"/>
-        />
+        android:layout_margin="@dimen/speech_button_bottom" />
 </LinearLayout>
