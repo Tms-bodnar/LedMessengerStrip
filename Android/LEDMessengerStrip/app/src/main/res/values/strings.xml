@@ -7,4 +7,5 @@
     <string name="add_new_message">Új üzenet hozzáadása</string>
     <string name="add">Hozzáadás</string>
     <string name="delete_message">Üzenet törlése</string>
+    <string name="cancel">Kilépés</string>
 </resources>

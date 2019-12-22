@@ -22,6 +22,7 @@ public class CustomGridAdapter extends BaseAdapter {
     LayoutInflater inflater;
 
     public CustomGridAdapter(MainActivity mainActivity, List<Button> items) {
+        Log.d("xxx", "adapter contructed");
         this.mainActivity = mainActivity;
         this.items = items;
         inflater = (LayoutInflater) this.mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -46,7 +47,7 @@ public class CustomGridAdapter extends BaseAdapter {
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.cell, null);
         }
-        final Button button = (Button) convertView.findViewById(R.id.grid_item);
+        final Button button = convertView.findViewById(R.id.grid_item);
         button.setText(items.get(position).getText());
         button.setOnClickListener(new View.OnClickListener() {
             @Override

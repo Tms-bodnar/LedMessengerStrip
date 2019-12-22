@@ -1,10 +1,11 @@
 package com.kalandlabor.ledmessengerstrip;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -13,42 +14,40 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.text.Editable;
+import android.speech.RecognizerIntent;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import adapters.CustomGridAdapter;
-import adapters.ObjectSerializer;
-import dialogs.NewMessageDialog;
+import managers.BluetoothMessenger;
 
 public class MainActivity extends AppCompatActivity {
 
-    Context context;
+    public Context context;
     List<Button> buttonList;
     EditText newButtonsText;
     GridView gridView;
     CustomGridAdapter gridAdapter;
     SharedPreferences sPrefs;
     List<String> buttonTexts;
+    private final int REQ_CODE_SPEECH_INPUT = 100;
+    String textToSend;
+    BluetoothMessenger btm;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +69,13 @@ public class MainActivity extends AppCompatActivity {
         gridView = findViewById(R.id.grid_view);
         gridAdapter = new CustomGridAdapter(MainActivity.this, buttonList);
         gridView.setAdapter(gridAdapter);
+        btm = new BluetoothMessenger();
     }
 
     @Override
     protected void onResume(){
         super.onResume();
-  //     sPrefs = getSharedPreferences("buttons",context.MODE_PRIVATE);
-       sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> buttonTextSet = new HashSet<>();
         buttonTextSet =  sPrefs.getStringSet("buttonText", buttonTextSet);
         buttonTexts.addAll(buttonTextSet);
@@ -103,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
         final View dialogView = factory.inflate(R.layout.add_message_dialog, null);
         final AlertDialog dialog = new AlertDialog.Builder(this).create();
         dialog.setView(dialogView);
+        dialogView.findViewById(R.id.new_button_text).requestFocus();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialogView.findViewById(R.id.save_new_message).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,13 +146,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void speechToText(View view) {
-        Snackbar.make(view, "implement speechToText", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show();
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "hu-HU");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,
+                "Mondd az üzeneted!");
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+            a.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                Log.d("xxx", "activity result");
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data
+                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    textToSend = result.get(0);
+                    sendToBluetooth(textToSend);
+                }
+                break;
+            }
+        }
+    }
+
+    private void sendToBluetooth(String textToSend) {
+        btm.sendMessage(textToSend);
     }
 
     public void itemClicked(int position){
-        Snackbar.make(getWindow().getCurrentFocus(), "implement speechToText" + buttonList.get(position).getText(), Snackbar.LENGTH_LONG)
+        Snackbar.make(getWindow().getCurrentFocus(), "Elküldted: " + buttonList.get(position).getText(), Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
+        sendToBluetooth(buttonList.get(position).getText().toString());
     }
 
 
