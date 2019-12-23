@@ -26,8 +26,7 @@ textEffect_t textFade = PA_FADE;
 textPosition_t fadedTextPosition = PA_CENTER;
 
 // Global message buffers shared by Serial and Scrolling functions
-#define BUF_SIZE 75
-char advMessage[BUF_SIZE] = {"Booting..."};
+#define BUF_SIZE 100
 char curMessage[BUF_SIZE] = {""};
 char newMessage[BUF_SIZE] = {""};
 bool newMessageAvailable = false;
@@ -46,22 +45,26 @@ void readSerial(void)
   if (readString.length() > 0)
   {
     strcpy(newMessage, readString.c_str());
+    Serial.print("newbt ");
+    Serial.println(newMessage);
+    strcpy(curMessage, newMessage);
+    Serial.print("curr ");
+    Serial.println(strlen((char*)curMessage));
     newMessageAvailable = true;
     repeat = 0;
-  }
+  } 
   readString = "";
 }
 void setup()
 {
+  
   Serial.begin(9600);
   Serial.println("Arduino is ready");
   BTserial.begin(9600);
   P.begin();
   P.setFont(ExtASCII);
   P.setIntensity(0);
-  strcpy(curMessage, advMessage);
-  Serial.println("len:" + strlen(curMessage));
-  if (strlen(curMessage) > 10)
+  if (strlen((char*)curMessage) > 10)
   {
     P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
   }
@@ -75,16 +78,26 @@ void loop()
 {
   if (repeat < 3)
   {
+    if (newMessageAvailable)
+      {
     if (P.displayAnimate())
     {
       P.displayReset();
-      if (newMessageAvailable)
+      
+        if (strlen((char*)curMessage) > 10)
       {
-        strcpy(curMessage, newMessage);
-        newMessageAvailable = false;
+        P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
       }
-      repeat++;
+       else
+      {
+        P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
+       }
+        repeat++;
+      }
+      
     }
+  } else {
+    newMessageAvailable = false;
   }
   readSerial();
 }
