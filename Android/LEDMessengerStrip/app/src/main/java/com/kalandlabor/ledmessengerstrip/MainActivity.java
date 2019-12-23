@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -48,10 +49,13 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sPrefs;
     List<String> buttonTexts;
     private final int REQ_CODE_SPEECH_INPUT = 100;
+    private final int REQ_CODE_BLUETOOTH = 200;
     String textToSend;
     static BluetoothMessenger btm;
     final int ADD_TYPE = 1;
     final int ERROR_TYPE = 2;
+    final int DEV_ERROR_TYPE = 3;
+
     public static MyBluetoothTask btt = null;
 
     @Override
@@ -146,6 +150,29 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             dialog.show();
+        }if (type == DEV_ERROR_TYPE) {
+            LayoutInflater factory = LayoutInflater.from(this);
+            final View dialogView = factory.inflate(R.layout.check_bluetooth_dialog, null);
+            final AlertDialog dialog = new AlertDialog.Builder(this).create();
+            dialog.setView(dialogView);
+            TextView tv = dialogView.findViewById(R.id.error_dialog_text);
+            tv.setText(R.string.bluetooth_settings_message);
+            dialogView.findViewById(R.id.OK_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btt.cancel(true);
+                    openBluetoothSettings();
+                    dialog.dismiss();
+                }
+            });
+            dialogView.findViewById(R.id.Cancel_btn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                    finishAndRemoveTask();
+                }
+            });
+            dialog.show();
         }
     }
 
@@ -179,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     private void openBluetoothSettings(){
         Intent intentOpenBluetoothSettings = new Intent();
         intentOpenBluetoothSettings.setAction(android.provider.Settings.ACTION_BLUETOOTH_SETTINGS);
-        startActivity(intentOpenBluetoothSettings);
+        startActivityForResult(intentOpenBluetoothSettings, REQ_CODE_BLUETOOTH);
     }
 
     public void speechToText(View view) {
@@ -208,6 +235,11 @@ public class MainActivity extends AppCompatActivity {
                     textToSend = result.get(0);
                     sendToBluetooth(textToSend);
                 }
+                break;
+            }
+            case REQ_CODE_BLUETOOTH: {
+                btt.cancel(true);
+                btt.restartMyBluetoothTask();
                 break;
             }
         }
@@ -254,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         private final WeakReference<MainActivity> weakActivity;
         ProgressDialog progressDialog;
         final int ERROR_TYPE = 2;
+        final int DEV_ERROR_TYPE = 3;
         MyBluetoothTask myBtt = null;
 
         MyBluetoothTask(MainActivity myActivity) {
@@ -276,8 +309,8 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 if (result.equals("BLUETOOTH ERROR") && !isCancelled()) {
                     Log.d("xxx", "dev NOK");
-                    activity.openBluetoothSettings();
                     progressDialog.dismiss();
+                    activity.openDialog(DEV_ERROR_TYPE);
                 } else if (result.equals("clientsocket Error") && ! isCancelled()){
                     Log.d("xxx", "socket NOK");
                     progressDialog.dismiss();
