@@ -315,6 +315,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("xxx", "socket NOK");
                     progressDialog.dismiss();
                     activity.openDialog(ERROR_TYPE);
+                } else {
+                    Log.d("xxx", "Bluetooth OK");
+                    progressDialog.dismiss();
                 }
             }
         }
