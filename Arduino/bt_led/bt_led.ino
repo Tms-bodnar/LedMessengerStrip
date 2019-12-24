@@ -62,14 +62,15 @@ void setup()
 void loop()
 {
   readSerial();
-  if (newMessageAvailable)
-  {   
-    strcpy(curMessage, newMessage);
-    if (repeat < 3)
+  if (P.displayAnimate())
+  {
+    if (newMessageAvailable)
     {
-      //if (P.displayAnimate())
-      //{ 
-        P.displayReset();
+      strcpy(curMessage, newMessage);
+      if (repeat < 2)
+      {
+
+
         Serial.println(repeat);
         Serial.println(curMessage);
         if (strlen((char*)curMessage) > 10)
@@ -81,10 +82,11 @@ void loop()
           P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
         }
         repeat++;
-     // }
-    } else {
-      newMessageAvailable = false;
-      strcpy(curMessage, ""); 
+      } else {
+        newMessageAvailable = false;
+        P.displayReset();
+        strcpy(curMessage, "");
       }
+    }
   }
 }
