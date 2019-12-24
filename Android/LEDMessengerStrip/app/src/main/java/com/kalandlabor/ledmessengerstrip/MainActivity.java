@@ -88,7 +88,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        btt.restartMyBluetoothTask();
+        if(btm.getClientSocket() == null) {
+            btt.restartMyBluetoothTask();
+        }
         sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> buttonTextSet = new HashSet<>();
         buttonTextSet =  sPrefs.getStringSet("buttonText", buttonTextSet);
@@ -241,13 +243,13 @@ public class MainActivity extends AppCompatActivity {
                     textToSend = result.get(0);
                     sendToBluetooth(textToSend);
                 }
-                break;
             }
+            break;
             case REQ_CODE_BLUETOOTH: {
                 btt.cancel(true);
                 btt.restartMyBluetoothTask();
-                break;
             }
+            break;
         }
     }
 
