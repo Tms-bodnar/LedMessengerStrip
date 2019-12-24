@@ -27,7 +27,7 @@ textPosition_t fadedTextPosition = PA_CENTER;
 
 // Global message buffers shared by Serial and Scrolling functions
 #define BUF_SIZE 100
-char curMessage[BUF_SIZE] = {""};
+char curMessage[BUF_SIZE] = {"Booting..."};
 char newMessage[BUF_SIZE] = {""};
 bool newMessageAvailable = false;
 String readString;
@@ -45,59 +45,46 @@ void readSerial(void)
   if (readString.length() > 0)
   {
     strcpy(newMessage, readString.c_str());
-    Serial.print("newbt ");
-    Serial.println(newMessage);
-    strcpy(curMessage, newMessage);
-    Serial.print("curr ");
-    Serial.println(strlen((char*)curMessage));
     newMessageAvailable = true;
     repeat = 0;
-  } 
+  }
   readString = "";
 }
 void setup()
 {
-  
   Serial.begin(9600);
-  Serial.println("Arduino is ready");
   BTserial.begin(9600);
   P.begin();
   P.setFont(ExtASCII);
   P.setIntensity(0);
-  if (strlen((char*)curMessage) > 10)
-  {
-    P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
-  }
-  else
-  {
-    P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
-  }
 }
 
 void loop()
 {
-  if (repeat < 3)
-  {
-    if (newMessageAvailable)
-      {
-    if (P.displayAnimate())
-    {
-      P.displayReset();
-      
-        if (strlen((char*)curMessage) > 10)
-      {
-        P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
-      }
-       else
-      {
-        P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
-       }
-        repeat++;
-      }
-      
-    }
-  } else {
-    newMessageAvailable = false;
-  }
   readSerial();
+  if (newMessageAvailable)
+  {   
+    strcpy(curMessage, newMessage);
+    if (repeat < 3)
+    {
+      //if (P.displayAnimate())
+      //{ 
+        P.displayReset();
+        Serial.println(repeat);
+        Serial.println(curMessage);
+        if (strlen((char*)curMessage) > 10)
+        {
+          P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
+        }
+        else if (strlen((char*)curMessage) <= 10)
+        {
+          P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
+        }
+        repeat++;
+     // }
+    } else {
+      newMessageAvailable = false;
+      strcpy(curMessage, ""); 
+      }
+  }
 }

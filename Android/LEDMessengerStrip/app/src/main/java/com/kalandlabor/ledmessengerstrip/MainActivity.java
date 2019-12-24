@@ -19,10 +19,12 @@ import androidx.loader.content.AsyncTaskLoader;
 import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -185,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             Button b = new Button(context);
             b.setText(text);
             buttonList.add(b);
-        }
+            }
     }
 
     @Override
@@ -198,12 +200,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.bluetooth_settings) {
-            Toast.makeText(context, R.string.bluetooth_settings_message, Toast.LENGTH_SHORT).show();
             openBluetoothSettings();
             return true;
         }
         if (id == R.id.faq) {
-            Toast.makeText(context, "Implement faq", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -253,6 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendToBluetooth(String textToSend) {
         if(btm.getClientSocket() != null) {
+            showToast("elküldve: " + textToSend);
             btm.sendMessage(textToSend);
         } else {
             openDialog(ERROR_TYPE);
@@ -260,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void itemClicked(int position){
-        Toast.makeText(context, R.string.sent + textToSend, Toast.LENGTH_SHORT);
+
         sendToBluetooth(buttonList.get(position).getText().toString());
     }
 
@@ -286,6 +287,19 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+    private void showToast(String message){
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(R.layout.custom_toast,
+                (ViewGroup) findViewById(R.id.custom_toast_container));
+
+        TextView text = (TextView) layout.findViewById(R.id.text);
+        text.setText(message);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 
     static class MyBluetoothTask extends AsyncTask<Void, Void, String> {
