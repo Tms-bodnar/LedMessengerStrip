@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         buttonList = new ArrayList<>();
-        buttonTexts= new ArrayList<>();
-        addNewButton(getResources().getString(R.string.speech_button));
         gridView = findViewById(R.id.grid_view);
         gridAdapter = new CustomGridAdapter(MainActivity.this, buttonList);
         gridView.setAdapter(gridAdapter);
@@ -92,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         sPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         Set<String> buttonTextSet = new HashSet<>();
         buttonTextSet =  sPrefs.getStringSet("buttonText", buttonTextSet);
+        buttonTexts= new ArrayList<>();
         buttonTexts.addAll(buttonTextSet);
         for ( String text : buttonTexts) {
             addNewButton(text);
@@ -177,9 +176,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addNewButton(String text) {
-        Button b =new Button(context);
-        b.setText(text);
-        buttonList.add(b);
+        boolean exist = false;
+        for ( Button btn : buttonList) {
+            if (btn.getText().toString().equals(text)){
+                exist = true;
+            }
+        }if (! exist ) {
+            Button b = new Button(context);
+            b.setText(text);
+            buttonList.add(b);
+        }
     }
 
     @Override
