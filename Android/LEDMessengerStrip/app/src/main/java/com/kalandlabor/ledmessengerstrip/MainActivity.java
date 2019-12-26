@@ -41,6 +41,11 @@ import java.util.Set;
 import adapters.CustomGridAdapter;
 import managers.BluetoothMessenger;
 
+/**
+ * App for controlling LED messenger Strip device
+ * manages the connection and send messages to the device with BluetoothMessenger class
+ * save the defined Buttons in SharedPreferences
+ */
 public class MainActivity extends AppCompatActivity {
 
     public Context context;
@@ -83,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
         btt.execute();
     }
 
-
-
     @Override
     protected void onResume(){
         super.onResume();
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         openDialog(ADD_TYPE);
     }
 
+    //opens a dialog based on dialog type
     private void openDialog( int type) {
         if(type == ADD_TYPE) {
             LayoutInflater factory = LayoutInflater.from(this);
@@ -217,6 +221,7 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(intentOpenBluetoothSettings, REQ_CODE_BLUETOOTH);
     }
 
+    // opens the google speech to text activity
     public void speechToText(View view) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -231,12 +236,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // gets the activity results from google speechToText or Bluetooth settings
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQ_CODE_SPEECH_INPUT: {
-                Log.d("xxx", "activity result");
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
@@ -253,6 +258,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // sends messege with BluetoothMessenger class
     private void sendToBluetooth(String textToSend) {
         if(btm.getClientSocket() != null) {
             showToast("elküldve: " + textToSend);
@@ -262,17 +268,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //gets a message text from buttonlist's clicked item
     public void itemClicked(int position){
-
         sendToBluetooth(buttonList.get(position).getText().toString());
     }
 
-
+    //remove item from buttonList
     public boolean removeItem(Button button) {
         for ( Button b: buttonList ) {
             if(b.getText() == button.getText()){
                 buttonList.remove(b);
-                Log.d("xxx","item remove " + button.getText());
                 gridAdapter.notifyDataSetChanged();
                 return removeButtonText(button);
             }
@@ -281,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //remove text from buttonTexts ( and from SharedPreferences in OnPause )
     private boolean removeButtonText(Button button) {
         for (String s : buttonTexts) {
             if (s.equals(button.getText())) {
@@ -290,6 +296,8 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    // showing custom Toast
     private void showToast(String message){
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast,
@@ -304,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
+    // Class for separate AsyncTask for initializing Bluetooth connection
+    // in BluetoothMeóanager class,
     static class MyBluetoothTask extends AsyncTask<Void, Void, String> {
         private final WeakReference<MainActivity> weakActivity;
         ProgressDialog progressDialog;
@@ -317,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public String doInBackground(Void... params) {
-                Log.d("xxx", "Run doInBackground");
                 return btm.initBluetooth();
         }
 
@@ -330,15 +339,12 @@ public class MainActivity extends AppCompatActivity {
                 return;
             } else {
                 if (result.equals("BLUETOOTH ERROR") && !isCancelled()) {
-                    Log.d("xxx", "dev NOK");
                     progressDialog.dismiss();
                     activity.openDialog(DEV_ERROR_TYPE);
                 } else if (result.equals("clientsocket Error") && ! isCancelled()){
-                    Log.d("xxx", "socket NOK");
                     progressDialog.dismiss();
                     activity.openDialog(ERROR_TYPE);
                 } else {
-                    Log.d("xxx", "Bluetooth OK");
                     progressDialog.dismiss();
                 }
             }
@@ -359,7 +365,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void restartMyBluetoothTask(){
-            Log.d("xxx", "MybluetoothTask restart");
             myBtt = new MyBluetoothTask(weakActivity.get());
             myBtt.execute();
         }

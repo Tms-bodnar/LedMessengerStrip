@@ -15,6 +15,10 @@ import com.kalandlabor.ledmessengerstrip.R;
 
 import java.util.List;
 
+/**
+ * Custom adapter for Buttonlist, with OnClickListener
+ * and OnLongClickListener for removing Button
+ */
 public class CustomGridAdapter extends BaseAdapter {
 
     MainActivity mainActivity;
@@ -22,7 +26,6 @@ public class CustomGridAdapter extends BaseAdapter {
     LayoutInflater inflater;
 
     public CustomGridAdapter(MainActivity mainActivity, List<Button> items) {
-        Log.d("xxx", "adapter contructed");
         this.mainActivity = mainActivity;
         this.items = items;
         inflater = (LayoutInflater) this.mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,16 +61,13 @@ public class CustomGridAdapter extends BaseAdapter {
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Log.d("xxx","item selected ");
                 PopupMenu popupMenu = new PopupMenu(mainActivity,v);
                 popupMenu.inflate(R.menu.context_menu);
                 popupMenu.show();
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        Log.d("xxx","item selected " + button.getText());
                         if  (mainActivity.removeItem(button)){
-                            Log.d("xxx","item removed ");
                             notifyDataSetChanged();
                         }
                         return true;

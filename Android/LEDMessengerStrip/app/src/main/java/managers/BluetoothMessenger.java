@@ -10,6 +10,10 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * initialize the bluetooth connection with HC-05 device
+ * and when the socket is OK, sends a message.
+ */
 public class BluetoothMessenger {
 
     BluetoothAdapter bluetoothAdapter;
@@ -20,6 +24,7 @@ public class BluetoothMessenger {
     public BluetoothMessenger(){
     }
 
+    // check the socket, and sends a messege
     public void sendMessage(String textToSend) {
         if ( clientSocket!= null && os != null) {
             write(textToSend);
@@ -29,6 +34,7 @@ public class BluetoothMessenger {
         }
     }
 
+    // initialize the connection, and sends a result in String
     public String initBluetooth() {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) {
@@ -51,10 +57,8 @@ public class BluetoothMessenger {
                                 clientSocket = (BluetoothSocket) m.invoke(device, 1);
                                 clientSocket.connect();
                                 os = clientSocket.getOutputStream();
-                                Log.d("xxx", "socket + OS, OK");
                                 return "OK";
                             } catch (Exception e) {
-                                Log.d("xxx", "clientsocket Error: " + e.getMessage());
                                 return "clientsocket Error";
                             }
                         }
@@ -62,13 +66,16 @@ public class BluetoothMessenger {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("BLUETOOTH ERROR ", e.getMessage());
                 return "BLUETOOTH ERROR";
             }
             return "NOK";
         }
     }
 
+    // converts the string to byte array
+    // (some special characters need to set to other),
+    // because the device can not showing correctly
+    // then creates a byte array and sends it with outputstream
     public void write(String textToSend) {
         byte[] bytes = new byte[textToSend.length()];
         try {
@@ -84,14 +91,9 @@ public class BluetoothMessenger {
                 bytes[i]= (byte)temp;
             }
             os.write(bytes);
-            Log.d("xxx", "sended" + bytes);
         } catch (IOException e) {
             Log.d("xxx", "write exception " + e.getMessage());
         }
-    }
-
-    public BluetoothDevice getDevice(){
-        return device;
     }
 
     public BluetoothSocket getClientSocket(){

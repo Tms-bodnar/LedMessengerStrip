@@ -18,7 +18,7 @@
 SoftwareSerial BTserial(RX_PIN, TX_PIN);
 MD_Parola P = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
-uint8_t scrollSpeed = 60; // default frame delay value
+uint8_t scrollSpeed = 30; // default frame delay value
 textEffect_t scrollEffect = PA_SCROLL_LEFT;
 textPosition_t scrollAlign = PA_LEFT;
 uint16_t scrollPause = 100; // in milliseconds
@@ -33,6 +33,7 @@ bool newMessageAvailable = false;
 String readString;
 int repeat = 0;
 
+//reading from Bluetooth serial, and copy readed chars to newMessage string
 void readSerial(void)
 {
   String readString;
@@ -50,6 +51,8 @@ void readSerial(void)
   }
   readString = "";
 }
+
+//setup the bluetooth serial and parola
 void setup()
 {
   Serial.begin(9600);
@@ -59,6 +62,9 @@ void setup()
   P.setIntensity(0);
 }
 
+// Read from serial, when new message available,
+// display the text twice with fading or scrolling
+// based on message length
 void loop()
 {
   readSerial();
@@ -69,10 +75,6 @@ void loop()
       strcpy(curMessage, newMessage);
       if (repeat < 2)
       {
-
-
-        Serial.println(repeat);
-        Serial.println(curMessage);
         if (strlen((char*)curMessage) > 10)
         {
           P.displayText(curMessage, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
