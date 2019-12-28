@@ -22,8 +22,8 @@ uint8_t scrollSpeed = 30; // default frame delay value
 textEffect_t scrollEffect = PA_SCROLL_LEFT;
 textPosition_t scrollAlign = PA_LEFT;
 uint16_t scrollPause = 100; // in milliseconds
-textEffect_t textFade = PA_FADE;
-textPosition_t fadedTextPosition = PA_CENTER;
+textEffect_t textGrow = PA_GROW_UP;
+textPosition_t growTextPosition = PA_CENTER;
 
 // Global message buffers shared by Serial and Scrolling functions
 #define BUF_SIZE 100
@@ -59,11 +59,11 @@ void setup()
   BTserial.begin(9600);
   P.begin();
   P.setFont(ExtASCII);
-  P.setIntensity(0);
+  P.setIntensity(10);
 }
 
 // Read from serial, when new message available,
-// display the text twice with fading or scrolling
+// display the text twice with grow_up or scrolling
 // based on message length
 void loop()
 {
@@ -81,7 +81,7 @@ void loop()
         }
         else if (strlen((char*)curMessage) <= 10)
         {
-          P.displayText(curMessage, fadedTextPosition, 300, 100, textFade, textFade);
+          P.displayText(curMessage, growTextPosition, 30, 1000, textGrow, textGrow);
         }
         repeat++;
       } else {
